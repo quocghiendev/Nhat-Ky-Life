@@ -1,0 +1,17 @@
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.env
+
+# SQLite
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-wal
+
+# Uploaded Media (keep uploads dir)
+data/uploads/images/*
+!data/uploads/images/.gitkeep
+data/uploads/audio/*
+!data/uploads/audio/.gitkeep

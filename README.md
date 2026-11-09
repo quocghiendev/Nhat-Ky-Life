@@ -1,4 +1,4 @@
-# 📔 Nhật Ký AI Thực Thời (Multimodal AI Journal)
+# 📔 Nhật Ký AI Life (Multimodal AI Journal)
 
 Ứng dụng web viết nhật ký hiện đại bằng **Chữ viết**, **Âm thanh** và **Hình ảnh**, kết hợp sức mạnh của **Trí tuệ Nhân tạo (Multimodal AI)** để tự động quan sát ảnh chụp từ camera, lắng nghe giọng nói voice, và tổng hợp lại thành các trang nhật ký sống động, giàu cảm xúc theo từng ngày thời gian thực.
 

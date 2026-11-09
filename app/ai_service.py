@@ -125,7 +125,7 @@ async def _call_gemini_multimodal(
     current_time: datetime,
     time_of_day: str
 ) -> Dict[str, Any]:
-    model = get_setting("gemini_model", "gemini-2.5-flash")
+    model = get_setting("gemini_model", "gemini-3.8-flash")
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={gemini_key}"
     
     parts: List[Dict[str, Any]] = []
@@ -468,7 +468,7 @@ async def generate_daily_summary(date_str: str, entries: List[Dict[str, Any]]) -
     
     if gemini_key:
         try:
-            model = get_setting("gemini_model", "gemini-2.5-flash")
+            model = get_setting("gemini_model", "gemini-3.8-flash")
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={gemini_key}"
             prompt = f"""
 Bạn là người trợ lý viết nhật ký tổng kết ngày chuyên nghiệp.

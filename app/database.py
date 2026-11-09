@@ -64,7 +64,7 @@ def init_db():
         # Default settings if not already present
         defaults = {
             "ai_provider": "gemini",
-            "gemini_model": "gemini-2.5-flash",
+            "gemini_model": "gemini-3.8-flash",
             "gemini_api_key": "",
             "openai_api_key": "",
             "openai_model": "gpt-4o-mini",
@@ -74,6 +74,8 @@ def init_db():
         for k, v in defaults.items():
             cursor.execute("INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)", (k, v))
             
+        # Migrate deprecated gemini-2.5-flash to gemini-3.8-flash if present
+        cursor.execute("UPDATE settings SET value = 'gemini-3.8-flash' WHERE key = 'gemini_model' AND value = 'gemini-2.5-flash'")
         conn.commit()
 
 # --- Entry Queries ---

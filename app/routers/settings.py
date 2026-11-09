@@ -36,7 +36,7 @@ def get_settings():
 
     return {
         "ai_provider": all_settings.get("ai_provider", "gemini"),
-        "gemini_model": all_settings.get("gemini_model", "gemini-2.5-flash"),
+        "gemini_model": all_settings.get("gemini_model", "gemini-3.8-flash"),
         "gemini_api_key_masked": mask_key(gemini_key),
         "has_gemini_key": bool(gemini_key),
         "openai_model": all_settings.get("openai_model", "gpt-4o-mini"),
@@ -77,13 +77,13 @@ async def test_key(req: TestKeyRequest):
         raise HTTPException(status_code=400, detail="API Key không được để trống.")
         
     if req.provider.lower() == "gemini":
-        model = req.model or "gemini-2.5-flash"
+        model = req.model or "gemini-3.8-flash"
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}"
         payload = {
             "contents": [{"role": "user", "parts": [{"text": "Xin chào! Trả lời đúng 1 từ: OK"}]}]
         }
         try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
+            async with httpx.AsyncClient(timeout=30.0) as client:
                 resp = await client.post(url, json=payload)
                 if resp.status_code == 200:
                     return {"valid": True, "message": "Kết nối Gemini API thành công!"}

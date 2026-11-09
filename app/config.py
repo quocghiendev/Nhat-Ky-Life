@@ -23,6 +23,6 @@ if ENV_PATH.exists():
 
 # Supported AI configurations
 DEFAULT_AI_PROVIDER = os.getenv("AI_PROVIDER", "gemini")
-DEFAULT_GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+DEFAULT_GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
 DEFAULT_OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 DEFAULT_AI_TONE = os.getenv("AI_TONE", "chan_that")  # chan_that, sau_sac, tho_mong, vui_ve, toi_gian

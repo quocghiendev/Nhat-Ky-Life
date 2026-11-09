@@ -54,6 +54,38 @@ Toàn bộ mã nguồn, tài nguyên và cơ sở dữ liệu đều được l�
 
 ---
 
+## 📱 Cách Truy Cập Từ Điện Thoại Hoặc Máy Khác
+
+Khi bạn khởi động máy chủ (bằng `start.bat` hoặc `run.py`), hệ thống sẽ hiển thị 2 đường link:
+- `http://localhost:8000` (dành cho máy tính hiện tại).
+- `http://192.168.1.x:8000` (dành cho điện thoại hoặc máy khác trong cùng mạng Wi-Fi).
+
+### Trường hợp A: Dùng trong cùng mạng Wi-Fi (Nội bộ LAN)
+1. Kết nối điện thoại hoặc máy tính thứ hai vào **cùng mạng Wi-Fi** với máy chủ này.
+2. Mở trình duyệt trên máy đó và nhập địa chỉ: `http://<IP_MÁY_BẠN>:8000` (ví dụ: `http://192.168.1.13:8000`).
+3. **Mẹo về Camera & Micro**:
+   - Do chính sách bảo mật trình duyệt, Camera và Mic trực tiếp (`getUserMedia`) chỉ mở khi có `HTTPS` hoặc `localhost`.
+   - Vì vậy khi truy cập qua IP trên điện thoại, bạn chỉ cần bấm nút **"Tải ảnh lên"** &rarr; Điện thoại sẽ tự động mở Camera để chụp ảnh trực tiếp và gửi lên AI bình thường!
+   - Tương tự, bạn có thể tải bản ghi âm có sẵn từ máy.
+
+### Trường hợp B: Truy cập từ bất kỳ đâu (Bằng đường link HTTPS có đầy đủ Camera & Mic trực tiếp)
+Nếu bạn muốn dùng điện thoại ngoài đường (kết nối 4G/5G) bật Camera trực tiếp và thu âm giọng nói:
+1. Bạn có thể sử dụng **Cloudflare Quick Tunnel** (hoàn toàn miễn phí, không cần đăng ký tài khoản):
+   - Mở PowerShell và chạy:
+   ```powershell
+   winget install --id Cloudflare.cloudflared
+   cloudflared tunnel --url http://localhost:8000
+   ```
+2. Cloudflare sẽ tạo cho bạn 1 đường link HTTPS (ví dụ: `https://xxx.trycloudflare.com`).
+3. Mở link này trên điện thoại ở bất cứ đâu: Camera và Microphone trực tiếp sẽ hoạt động 100%!
+
+### Trường hợp C: Sao chép sang một máy tính khác để chạy độc lập
+1. Copy toàn bộ thư mục `NhatKyWeb` sang máy tính mới.
+2. Đảm bảo máy tính mới đã cài Python (khuyên dùng Python 3.11).
+3. Nhấp đúp chuột vào file `start.bat`. Hệ thống sẽ tự động tạo môi trường và cài đặt các thư viện cần thiết.
+
+---
+
 ## 🔑 Cấu Hình AI (Gemini / OpenAI)
 
 Ngay trên giao diện web, nhấn vào nút **"⚙️ Cài đặt AI"** ở góc trên bên phải:

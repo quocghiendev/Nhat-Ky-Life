@@ -20,6 +20,11 @@
   let capturedFile = null;
 
   async function startCamera() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert('⚠️ Trình duyệt trên thiết bị này yêu cầu kết nối HTTPS (hoặc localhost) để mở Camera trực tiếp.\n\n👉 Bạn hãy dùng nút "Tải ảnh lên" (trên điện thoại bấm vào sẽ tự mở Camera chụp ảnh bình thường!), hoặc dùng liên kết HTTPS.');
+      return;
+    }
+
     try {
       if (currentStream) {
         stopCamera();

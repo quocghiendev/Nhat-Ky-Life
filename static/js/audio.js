@@ -65,6 +65,11 @@
   setupSpeechRecognition();
 
   async function startRecording() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert('⚠️ Trình duyệt trên thiết bị này yêu cầu kết nối HTTPS (hoặc localhost) để cấp quyền Ghi âm Micro trực tiếp.\n\n👉 Bạn hãy dùng nút "Tải file Voice" (trên điện thoại có thể chọn ghi âm sẵn), hoặc dùng liên kết HTTPS.');
+      return;
+    }
+
     try {
       audioChunks = [];
       liveTranscript = '';

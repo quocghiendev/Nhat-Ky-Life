@@ -7,8 +7,10 @@ __pycache__/
 
 # SQLite
 *.sqlite3
+*.sqlite3-*
 *.sqlite3-journal
 *.sqlite3-wal
+*.sqlite3-shm
 
 # Uploaded Media (keep uploads dir)
 data/uploads/images/*

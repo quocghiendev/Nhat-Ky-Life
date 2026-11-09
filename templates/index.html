@@ -1,596 +1,841 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi" class="dark">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nhật Ký AI Thực Thời - Ghi Lại Khoảnh Khắc Bằng Giọng Nói & Hình Ảnh</title>
-  
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              50: '#fdf4ff',
-              100: '#fae8ff',
-              500: '#a855f7',
-              600: '#9333ea',
-              700: '#7e22ce'
-            }
-          }
-        }
-      }
-    }
-  </script>
-  
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  
-  <!-- Google Fonts: Plus Jakarta Sans / Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
-  
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="/static/css/style.css">
-</head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-purple-600 selection:text-white transition-colors duration-200">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nhật Ký Life - Ghi Lại Khoảnh Khắc Bằng Giọng Nói & Hình Ảnh</title>
 
-  <!-- Main Container -->
-  <div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: "#fdf4ff",
+                100: "#fae8ff",
+                500: "#a855f7",
+                600: "#9333ea",
+                700: "#7e22ce",
+              },
+            },
+          },
+        },
+      };
+    </script>
 
-    <!-- Header Navigation -->
-    <header class="flex flex-col md:flex-row md:items-center justify-between pb-6 mb-8 border-b border-slate-800 gap-4">
-      <div>
-        <div class="flex items-center space-x-3">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
-            <i class="fa-solid fa-book-bookmark text-2xl text-white"></i>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <!-- Google Fonts: Plus Jakarta Sans / Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body
+    class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-purple-600 selection:text-white transition-colors duration-200"
+  >
+    <!-- Main Container -->
+    <div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
+      <!-- Header Navigation -->
+      <header
+        class="flex flex-col md:flex-row md:items-center justify-between pb-6 mb-8 border-b border-slate-800 gap-4"
+      >
+        <div>
+          <div class="flex items-center space-x-3">
+            <div
+              class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-purple-500/20"
+            >
+              <i class="fa-solid fa-book-bookmark text-2xl text-white"></i>
+            </div>
+            <div>
+              <h1
+                class="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-300 bg-clip-text text-transparent font-serif"
+              >
+                Nhật Ký Life
+              </h1>
+              <p class="text-xs md:text-sm text-slate-400 font-medium">
+                Chụp ảnh camera & Voice giọng nói &bull; AI tự động tóm tắt thành nhật ký Của Bạn
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action items & Live Clock -->
+        <div class="flex items-center flex-wrap gap-2.5">
+          <div
+            id="liveClock"
+            class="hidden sm:flex items-center space-x-2 bg-slate-900/80 px-3.5 py-1.5 rounded-xl border border-slate-800 text-xs text-slate-300 font-mono"
+          >
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="clockText">00:00:00</span>
+          </div>
+
+          <button
+            id="themeToggleBtn"
+            title="Chuyển chế độ Sáng / Tối"
+            class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 transition"
+          >
+            <i class="fa-solid fa-moon" id="themeIcon"></i>
+          </button>
+
+          <button
+            id="openSettingsBtn"
+            class="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-200 text-sm font-medium transition shadow-sm"
+          >
+            <i class="fa-solid fa-sliders text-purple-400"></i>
+            <span>Cài đặt Mô Hình AI</span>
+            <span id="apiKeyStatusDot" class="w-2 h-2 rounded-full bg-amber-400" title="Trạng thái cấu hình API"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- App Overview Stats -->
+      <section class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-8">
+        <div
+          class="bg-slate-900/60 backdrop-blur border border-slate-800/80 p-3.5 rounded-2xl flex items-center space-x-3"
+        >
+          <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg">
+            <i class="fa-regular fa-calendar-check"></i>
           </div>
           <div>
-            <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-300 bg-clip-text text-transparent font-serif">
-              Nhật Ký AI Thực Thời
-            </h1>
-            <p class="text-xs md:text-sm text-slate-400 font-medium">
-              Chụp ảnh camera & Voice giọng nói &bull; AI tự động tóm tắt thành nhật ký sống động
-            </p>
+            <div class="text-xs text-slate-400">Tổng ngày</div>
+            <div id="statDays" class="text-lg font-bold text-slate-100">0</div>
           </div>
         </div>
-      </div>
+        <div
+          class="bg-slate-900/60 backdrop-blur border border-slate-800/80 p-3.5 rounded-2xl flex items-center space-x-3"
+        >
+          <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-pen-nib"></i>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400">Khoảnh khắc</div>
+            <div id="statEntries" class="text-lg font-bold text-slate-100">0</div>
+          </div>
+        </div>
+        <div
+          class="bg-slate-900/60 backdrop-blur border border-slate-800/80 p-3.5 rounded-2xl flex items-center space-x-3"
+        >
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-camera"></i>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400">Ảnh chụp</div>
+            <div id="statImages" class="text-lg font-bold text-slate-100">0</div>
+          </div>
+        </div>
+        <div
+          class="bg-slate-900/60 backdrop-blur border border-slate-800/80 p-3.5 rounded-2xl flex items-center space-x-3"
+        >
+          <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-microphone"></i>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400">Ghi âm voice</div>
+            <div id="statAudios" class="text-lg font-bold text-slate-100">0</div>
+          </div>
+        </div>
+      </section>
 
-      <!-- Action items & Live Clock -->
-      <div class="flex items-center flex-wrap gap-2.5">
-        <div id="liveClock" class="hidden sm:flex items-center space-x-2 bg-slate-900/80 px-3.5 py-1.5 rounded-xl border border-slate-800 text-xs text-slate-300 font-mono">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span id="clockText">00:00:00</span>
-        </div>
+      <!-- SECTION 1: CREATION STUDIO (Camera + Voice + Multimodal AI) -->
+      <section
+        class="bg-gradient-to-b from-slate-900/90 to-slate-900/50 backdrop-blur border border-purple-500/20 rounded-3xl p-5 md:p-7 mb-10 shadow-xl shadow-purple-950/20"
+      >
+        <!-- Studio Header / Mode Tabs -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b border-slate-800/80 gap-3"
+        >
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-full bg-purple-500"></span>
+            <h2 class="text-lg md:text-xl font-bold text-slate-100">Ghi Lại Khoảnh Khắc Ngay Bây Giờ</h2>
+          </div>
 
-        <button id="themeToggleBtn" title="Chuyển chế độ Sáng / Tối" class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 transition">
-          <i class="fa-solid fa-moon" id="themeIcon"></i>
-        </button>
-
-        <button id="openSettingsBtn" class="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-200 text-sm font-medium transition shadow-sm">
-          <i class="fa-solid fa-sliders text-purple-400"></i>
-          <span>Cài đặt AI</span>
-          <span id="apiKeyStatusDot" class="w-2 h-2 rounded-full bg-amber-400" title="Trạng thái cấu hình API"></span>
-        </button>
-      </div>
-    </header>
-
-    <!-- App Overview Stats -->
-    <section class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-8">
-      <div class="bg-slate-900/60 backdrop-blur border border-slate-800/80 p-3.5 rounded-2xl flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg">
-          <i class="fa-regular fa-calendar-check"></i>
-        </div>
-        <div>
-          <div class="text-xs text-slate-400">Tổng ngày</div>
-          <div id="statDays" class="text-lg font-bold text-slate-100">0</div>
-        </div>
-      </div>
-      <div class="bg-slate-900/60 backdrop-blur border border-slate-800/80 p-3.5 rounded-2xl flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg">
-          <i class="fa-solid fa-pen-nib"></i>
-        </div>
-        <div>
-          <div class="text-xs text-slate-400">Khoảnh khắc</div>
-          <div id="statEntries" class="text-lg font-bold text-slate-100">0</div>
-        </div>
-      </div>
-      <div class="bg-slate-900/60 backdrop-blur border border-slate-800/80 p-3.5 rounded-2xl flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg">
-          <i class="fa-solid fa-camera"></i>
-        </div>
-        <div>
-          <div class="text-xs text-slate-400">Ảnh chụp</div>
-          <div id="statImages" class="text-lg font-bold text-slate-100">0</div>
-        </div>
-      </div>
-      <div class="bg-slate-900/60 backdrop-blur border border-slate-800/80 p-3.5 rounded-2xl flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg">
-          <i class="fa-solid fa-microphone"></i>
-        </div>
-        <div>
-          <div class="text-xs text-slate-400">Ghi âm voice</div>
-          <div id="statAudios" class="text-lg font-bold text-slate-100">0</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION 1: CREATION STUDIO (Camera + Voice + Multimodal AI) -->
-    <section class="bg-gradient-to-b from-slate-900/90 to-slate-900/50 backdrop-blur border border-purple-500/20 rounded-3xl p-5 md:p-7 mb-10 shadow-xl shadow-purple-950/20">
-      
-      <!-- Studio Header / Mode Tabs -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b border-slate-800/80 gap-3">
-        <div class="flex items-center space-x-2">
-          <span class="w-3 h-3 rounded-full bg-purple-500"></span>
-          <h2 class="text-lg md:text-xl font-bold text-slate-100">
-            Ghi Lại Khoảnh Khắc Ngay Bây Giờ
-          </h2>
+          <div class="flex bg-slate-950/70 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
+            <button
+              id="tabAiModeBtn"
+              class="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-sm flex items-center space-x-1.5 transition"
+            >
+              <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+              <span>AI Đa Phương Thức</span>
+            </button>
+            <button
+              id="tabManualModeBtn"
+              class="px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 flex items-center space-x-1.5 transition"
+            >
+              <i class="fa-solid fa-keyboard"></i>
+              <span>Tự Viết Tay</span>
+            </button>
+          </div>
         </div>
 
-        <div class="flex bg-slate-950/70 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
-          <button id="tabAiModeBtn" class="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-sm flex items-center space-x-1.5 transition">
-            <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
-            <span>AI Đa Phương Thức</span>
-          </button>
-          <button id="tabManualModeBtn" class="px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 flex items-center space-x-1.5 transition">
-            <i class="fa-solid fa-keyboard"></i>
-            <span>Tự Viết Tay</span>
-          </button>
-        </div>
-      </div>
+        <!-- TAB 1: AI MULTIMODAL MODE -->
+        <div id="aiModeSection">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Left: CAMERA & PHOTO CAPTURE -->
+            <div class="bg-slate-950/60 rounded-2xl border border-slate-800/90 p-4 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-sm font-semibold text-slate-200 flex items-center space-x-2">
+                    <i class="fa-solid fa-camera text-purple-400"></i>
+                    <span>Hình ảnh / Camera sự kiện</span>
+                  </span>
+                  <span id="photoBadge" class="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full"
+                    >Chưa có ảnh</span
+                  >
+                </div>
 
-      <!-- TAB 1: AI MULTIMODAL MODE -->
-      <div id="aiModeSection">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-          <!-- Left: CAMERA & PHOTO CAPTURE -->
-          <div class="bg-slate-950/60 rounded-2xl border border-slate-800/90 p-4 flex flex-col justify-between">
-            <div>
-              <div class="flex items-center justify-between mb-3">
-                <span class="text-sm font-semibold text-slate-200 flex items-center space-x-2">
-                  <i class="fa-solid fa-camera text-purple-400"></i>
-                  <span>Hình ảnh / Camera sự kiện</span>
-                </span>
-                <span id="photoBadge" class="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full">Chưa có ảnh</span>
-              </div>
-
-              <!-- Camera Viewport / Photo Preview Box -->
-              <div class="relative w-full aspect-video sm:aspect-4/3 bg-slate-900 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center group">
-                
-                <!-- Placeholder / Empty state -->
-                <div id="cameraPlaceholder" class="text-center p-6">
-                  <div class="w-14 h-14 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center mx-auto mb-3 text-2xl">
-                    <i class="fa-solid fa-image"></i>
+                <!-- Camera Viewport / Photo Preview Box -->
+                <div
+                  class="relative w-full aspect-video sm:aspect-4/3 bg-slate-900 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center group"
+                >
+                  <!-- Placeholder / Empty state -->
+                  <div id="cameraPlaceholder" class="text-center p-6">
+                    <div
+                      class="w-14 h-14 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center mx-auto mb-3 text-2xl"
+                    >
+                      <i class="fa-solid fa-image"></i>
+                    </div>
+                    <p class="text-sm text-slate-300 font-medium">Bật Camera hoặc Tải ảnh sự kiện lên</p>
+                    <p class="text-xs text-slate-500 mt-1">Chụp khoảnh khắc ngoài đời bạn muốn viết nhật ký</p>
                   </div>
-                  <p class="text-sm text-slate-300 font-medium">Bật Camera hoặc Tải ảnh sự kiện lên</p>
-                  <p class="text-xs text-slate-500 mt-1">Chụp khoảnh khắc ngoài đời bạn muốn viết nhật ký</p>
+
+                  <!-- Video live element -->
+                  <video id="liveVideo" class="hidden w-full h-full object-cover" autoplay playsinline muted></video>
+
+                  <!-- Captured image preview -->
+                  <img
+                    id="capturedImagePreview"
+                    class="hidden w-full h-full object-contain bg-black/60"
+                    alt="Captured preview"
+                  />
+
+                  <!-- Hidden canvas for capturing frames -->
+                  <canvas id="captureCanvas" class="hidden"></canvas>
+
+                  <!-- Overlay Camera Controls (when live camera is active) -->
+                  <div
+                    id="liveCameraControls"
+                    class="hidden absolute bottom-3 inset-x-0 flex items-center justify-center space-x-3 px-4"
+                  >
+                    <button
+                      id="switchCameraBtn"
+                      title="Đổi camera trước/sau"
+                      class="p-2.5 rounded-full bg-slate-900/80 backdrop-blur border border-white/20 text-white hover:bg-slate-800 transition"
+                    >
+                      <i class="fa-solid fa-camera-rotate"></i>
+                    </button>
+                    <button
+                      id="snapPhotoBtn"
+                      class="px-5 py-2.5 rounded-full bg-red-600 hover:bg-red-500 text-white font-bold flex items-center space-x-2 shadow-lg shadow-red-600/40 transition active:scale-95"
+                    >
+                      <span class="w-3 h-3 rounded-full bg-white animate-ping"></span>
+                      <span>CHỤP ẢNH</span>
+                    </button>
+                    <button
+                      id="stopCameraBtn"
+                      title="Đóng camera"
+                      class="p-2.5 rounded-full bg-slate-900/80 backdrop-blur border border-white/20 text-white hover:bg-slate-800 transition"
+                    >
+                      <i class="fa-solid fa-xmark"></i>
+                    </button>
+                  </div>
                 </div>
+              </div>
 
-                <!-- Video live element -->
-                <video id="liveVideo" class="hidden w-full h-full object-cover" autoplay playsinline muted></video>
+              <!-- Action buttons below camera preview -->
+              <div class="flex flex-wrap items-center gap-2 mt-4">
+                <button
+                  id="startCameraBtn"
+                  class="flex-1 py-2 px-3 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-300 text-xs font-semibold flex items-center justify-center space-x-1.5 transition"
+                >
+                  <i class="fa-solid fa-video"></i>
+                  <span>Bật Camera</span>
+                </button>
 
-                <!-- Captured image preview -->
-                <img id="capturedImagePreview" class="hidden w-full h-full object-contain bg-black/60" alt="Captured preview">
+                <label
+                  class="flex-1 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700/80 border border-slate-700 text-slate-300 text-xs font-semibold flex items-center justify-center space-x-1.5 cursor-pointer transition"
+                >
+                  <i class="fa-solid fa-upload"></i>
+                  <span>Tải ảnh lên</span>
+                  <input type="file" id="imageFileInput" accept="image/*" class="hidden" />
+                </label>
 
-                <!-- Hidden canvas for capturing frames -->
-                <canvas id="captureCanvas" class="hidden"></canvas>
-
-                <!-- Overlay Camera Controls (when live camera is active) -->
-                <div id="liveCameraControls" class="hidden absolute bottom-3 inset-x-0 flex items-center justify-center space-x-3 px-4">
-                  <button id="switchCameraBtn" title="Đổi camera trước/sau" class="p-2.5 rounded-full bg-slate-900/80 backdrop-blur border border-white/20 text-white hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-camera-rotate"></i>
-                  </button>
-                  <button id="snapPhotoBtn" class="px-5 py-2.5 rounded-full bg-red-600 hover:bg-red-500 text-white font-bold flex items-center space-x-2 shadow-lg shadow-red-600/40 transition active:scale-95">
-                    <span class="w-3 h-3 rounded-full bg-white animate-ping"></span>
-                    <span>CHỤP ẢNH</span>
-                  </button>
-                  <button id="stopCameraBtn" title="Đóng camera" class="p-2.5 rounded-full bg-slate-900/80 backdrop-blur border border-white/20 text-white hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-xmark"></i>
-                  </button>
-                </div>
+                <button
+                  id="clearPhotoBtn"
+                  class="hidden py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 text-xs font-semibold flex items-center justify-center transition"
+                >
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
               </div>
             </div>
 
-            <!-- Action buttons below camera preview -->
-            <div class="flex flex-wrap items-center gap-2 mt-4">
-              <button id="startCameraBtn" class="flex-1 py-2 px-3 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-300 text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
-                <i class="fa-solid fa-video"></i>
-                <span>Bật Camera</span>
-              </button>
+            <!-- Right: VOICE RECORDER & AUDIO -->
+            <div class="bg-slate-950/60 rounded-2xl border border-slate-800/90 p-4 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-sm font-semibold text-slate-200 flex items-center space-x-2">
+                    <i class="fa-solid fa-microphone text-pink-400"></i>
+                    <span>Ghi âm giọng nói (Voice nhật ký)</span>
+                  </span>
+                  <span id="audioBadge" class="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full"
+                    >Chưa có voice</span
+                  >
+                </div>
 
-              <label class="flex-1 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700/80 border border-slate-700 text-slate-300 text-xs font-semibold flex items-center justify-center space-x-1.5 cursor-pointer transition">
-                <i class="fa-solid fa-upload"></i>
-                <span>Tải ảnh lên</span>
-                <input type="file" id="imageFileInput" accept="image/*" class="hidden">
-              </label>
+                <!-- Audio Waveform / Visualizer box -->
+                <div
+                  class="w-full aspect-video sm:aspect-4/3 bg-slate-900 rounded-xl overflow-hidden border border-slate-800 p-4 flex flex-col items-center justify-center relative"
+                >
+                  <!-- Live waveform canvas -->
+                  <canvas id="audioVisualizerCanvas" class="w-full h-24 rounded-lg bg-slate-950/50 mb-3"></canvas>
 
-              <button id="clearPhotoBtn" class="hidden py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 text-xs font-semibold flex items-center justify-center transition">
-                <i class="fa-solid fa-trash-can"></i>
-              </button>
+                  <!-- Live Timer & State indicator -->
+                  <div id="recordingTimerBox" class="flex items-center space-x-2 text-slate-300 mb-2">
+                    <span id="recordIndicator" class="w-3 h-3 rounded-full bg-slate-600"></span>
+                    <span id="recordingTimer" class="font-mono text-lg font-bold">00:00</span>
+                  </div>
+
+                  <div
+                    id="speechLiveTranscript"
+                    class="text-xs text-purple-300/80 italic text-center max-h-12 overflow-y-auto px-2"
+                  >
+                    <!-- Live Speech Recognition preview if available -->
+                  </div>
+
+                  <!-- Audio Playback (when recorded) -->
+                  <div id="recordedAudioPlayerContainer" class="hidden w-full mt-2">
+                    <audio id="recordedAudioPlayer" controls class="w-full h-10 rounded-lg"></audio>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Voice Controls -->
+              <div class="flex flex-wrap items-center gap-2 mt-4">
+                <button
+                  id="toggleRecordBtn"
+                  class="flex-1 py-2 px-3 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold flex items-center justify-center space-x-2 transition shadow-md shadow-pink-600/30"
+                >
+                  <i class="fa-solid fa-microphone" id="recordBtnIcon"></i>
+                  <span id="recordBtnText">Bắt đầu Ghi Âm</span>
+                </button>
+
+                <label
+                  class="flex-1 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700/80 border border-slate-700 text-slate-300 text-xs font-semibold flex items-center justify-center space-x-1.5 cursor-pointer transition"
+                >
+                  <i class="fa-solid fa-file-audio"></i>
+                  <span>Tải file Voice</span>
+                  <input type="file" id="audioFileInput" accept="audio/*" class="hidden" />
+                </label>
+
+                <button
+                  id="clearAudioBtn"
+                  class="hidden py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 text-xs font-semibold flex items-center justify-center transition"
+                >
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
             </div>
           </div>
 
-          <!-- Right: VOICE RECORDER & AUDIO -->
-          <div class="bg-slate-950/60 rounded-2xl border border-slate-800/90 p-4 flex flex-col justify-between">
+          <!-- Middle: Optional Notes & AI Options -->
+          <div class="mt-6 space-y-4">
             <div>
-              <div class="flex items-center justify-between mb-3">
-                <span class="text-sm font-semibold text-slate-200 flex items-center space-x-2">
-                  <i class="fa-solid fa-microphone text-pink-400"></i>
-                  <span>Ghi âm giọng nói (Voice nhật ký)</span>
-                </span>
-                <span id="audioBadge" class="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full">Chưa có voice</span>
-              </div>
-
-              <!-- Audio Waveform / Visualizer box -->
-              <div class="w-full aspect-video sm:aspect-4/3 bg-slate-900 rounded-xl overflow-hidden border border-slate-800 p-4 flex flex-col items-center justify-center relative">
-                
-                <!-- Live waveform canvas -->
-                <canvas id="audioVisualizerCanvas" class="w-full h-24 rounded-lg bg-slate-950/50 mb-3"></canvas>
-
-                <!-- Live Timer & State indicator -->
-                <div id="recordingTimerBox" class="flex items-center space-x-2 text-slate-300 mb-2">
-                  <span id="recordIndicator" class="w-3 h-3 rounded-full bg-slate-600"></span>
-                  <span id="recordingTimer" class="font-mono text-lg font-bold">00:00</span>
-                </div>
-
-                <div id="speechLiveTranscript" class="text-xs text-purple-300/80 italic text-center max-h-12 overflow-y-auto px-2">
-                  <!-- Live Speech Recognition preview if available -->
-                </div>
-
-                <!-- Audio Playback (when recorded) -->
-                <div id="recordedAudioPlayerContainer" class="hidden w-full mt-2">
-                  <audio id="recordedAudioPlayer" controls class="w-full h-10 rounded-lg"></audio>
-                </div>
-              </div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1.5">
+                Ghi chú nhanh / Cảm xúc muốn nhấn mạnh (Tùy chọn):
+              </label>
+              <input
+                type="text"
+                id="eventNotesInput"
+                placeholder="Ví dụ: Đang uống cà phê ngắm mưa cùng bạn cũ ở quán quen..."
+                class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-purple-500 transition"
+              />
             </div>
 
-            <!-- Voice Controls -->
-            <div class="flex flex-wrap items-center gap-2 mt-4">
-              <button id="toggleRecordBtn" class="flex-1 py-2 px-3 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold flex items-center justify-center space-x-2 transition shadow-md shadow-pink-600/30">
-                <i class="fa-solid fa-microphone" id="recordBtnIcon"></i>
-                <span id="recordBtnText">Bắt đầu Ghi Âm</span>
-              </button>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+              <!-- Tone selector -->
+              <div class="flex items-center space-x-2 text-xs">
+                <span class="text-slate-400 font-medium whitespace-nowrap"
+                  ><i class="fa-solid fa-feather text-purple-400"></i> Văn phong AI:</span
+                >
+                <select
+                  id="eventToneSelect"
+                  class="bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-purple-500"
+                >
+                  <option value="chan_that">Chân thật & Gần gũi</option>
+                  <option value="sau_sac">Sâu sắc & Chiêm nghiệm</option>
+                  <option value="tho_mong">Thơ mộng & Lãng mạn</option>
+                  <option value="vui_ve">Vui vẻ & Năng động</option>
+                  <option value="toi_gian">Tối giản & Súc tích</option>
+                </select>
+              </div>
 
-              <label class="flex-1 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700/80 border border-slate-700 text-slate-300 text-xs font-semibold flex items-center justify-center space-x-1.5 cursor-pointer transition">
-                <i class="fa-solid fa-file-audio"></i>
-                <span>Tải file Voice</span>
-                <input type="file" id="audioFileInput" accept="audio/*" class="hidden">
+              <!-- Auto fill toggle -->
+              <label class="flex items-center space-x-2.5 text-xs text-slate-300 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  id="autoSaveToggle"
+                  checked
+                  class="w-4 h-4 rounded text-purple-600 bg-slate-900 border-slate-700 focus:ring-0 focus:ring-offset-0"
+                />
+                <span class="font-medium">Tự động điền & lưu vào nhật ký ngày hôm nay</span>
               </label>
+            </div>
 
-              <button id="clearAudioBtn" class="hidden py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 text-xs font-semibold flex items-center justify-center transition">
-                <i class="fa-solid fa-trash-can"></i>
+            <!-- PRIMARY AI PROCESS BUTTON -->
+            <div class="pt-3">
+              <button
+                id="aiProcessBtn"
+                class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-sm md:text-base flex items-center justify-center space-x-3 shadow-xl shadow-purple-600/30 active:scale-[0.99] transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <i class="fa-solid fa-wand-magic-sparkles text-amber-300 text-lg"></i>
+                <span id="aiProcessBtnText">Tự Động Tóm Tắt & Viết Nhật Ký Ngày</span>
               </button>
+            </div>
+
+            <!-- AI Loading Status Banner -->
+            <div
+              id="aiLoadingStatus"
+              class="hidden p-4 rounded-2xl bg-purple-950/40 border border-purple-500/30 flex items-center space-x-3 text-purple-200 text-sm"
+            >
+              <div class="w-5 h-5 border-2 border-purple-400 border-t-transparent rounded-full animate-spin"></div>
+              <div id="aiLoadingText" class="font-medium">AI đang quan sát ảnh & lắng nghe giọng nói...</div>
             </div>
           </div>
         </div>
 
-        <!-- Middle: Optional Notes & AI Options -->
-        <div class="mt-6 space-y-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1.5">
-              Ghi chú nhanh / Cảm xúc muốn nhấn mạnh (Tùy chọn):
-            </label>
-            <input type="text" id="eventNotesInput" placeholder="Ví dụ: Đang uống cà phê ngắm mưa cùng bạn cũ ở quán quen..." class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-purple-500 transition">
-          </div>
-
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
-            <!-- Tone selector -->
-            <div class="flex items-center space-x-2 text-xs">
-              <span class="text-slate-400 font-medium whitespace-nowrap"><i class="fa-solid fa-feather text-purple-400"></i> Văn phong AI:</span>
-              <select id="eventToneSelect" class="bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-purple-500">
-                <option value="chan_that">Chân thật & Gần gũi</option>
-                <option value="sau_sac">Sâu sắc & Chiêm nghiệm</option>
-                <option value="tho_mong">Thơ mộng & Lãng mạn</option>
-                <option value="vui_ve">Vui vẻ & Năng động</option>
-                <option value="toi_gian">Tối giản & Súc tích</option>
-              </select>
+        <!-- TAB 2: MANUAL ENTRY MODE -->
+        <div id="manualModeSection" class="hidden">
+          <form id="manualEntryForm" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-1">Tiêu đề khoảnh khắc:</label>
+                <input
+                  type="text"
+                  id="manualTitle"
+                  placeholder="Tiêu đề nhật ký..."
+                  required
+                  class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                />
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-400 mb-1">Ngày:</label>
+                  <input
+                    type="date"
+                    id="manualDate"
+                    required
+                    class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-400 mb-1">Giờ:</label>
+                  <input
+                    type="time"
+                    id="manualTime"
+                    required
+                    class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+              </div>
             </div>
 
-            <!-- Auto fill toggle -->
-            <label class="flex items-center space-x-2.5 text-xs text-slate-300 cursor-pointer select-none">
-              <input type="checkbox" id="autoSaveToggle" checked class="w-4 h-4 rounded text-purple-600 bg-slate-900 border-slate-700 focus:ring-0 focus:ring-offset-0">
-              <span class="font-medium">Tự động điền & lưu vào nhật ký ngày hôm nay</span>
-            </label>
-          </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Nội dung nhật ký:</label>
+              <textarea
+                id="manualContent"
+                rows="4"
+                placeholder="Viết những suy nghĩ và cảm xúc của bạn..."
+                required
+                class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-purple-500"
+              ></textarea>
+            </div>
 
-          <!-- PRIMARY AI PROCESS BUTTON -->
-          <div class="pt-3">
-            <button id="aiProcessBtn" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-sm md:text-base flex items-center justify-center space-x-3 shadow-xl shadow-purple-600/30 active:scale-[0.99] transition disabled:opacity-50 disabled:cursor-not-allowed">
-              <i class="fa-solid fa-wand-magic-sparkles text-amber-300 text-lg"></i>
-              <span id="aiProcessBtnText">AI Tự Động Tóm Tắt & Viết Nhật Ký Ngày</span>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-1">Tâm trạng:</label>
+                <select
+                  id="manualMood"
+                  class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200"
+                >
+                  <option value="Vui vẻ|😊">😊 Vui vẻ</option>
+                  <option value="Bình yên|🌿">🌿 Bình yên</option>
+                  <option value="Hào hứng|✨">✨ Hào hứng</option>
+                  <option value="Chiêm nghiệm|☕">☕ Chiêm nghiệm</option>
+                  <option value="Biết ơn|💖">💖 Biết ơn</option>
+                  <option value="Mệt mỏi|😴">😴 Cần nghỉ ngơi</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-1"
+                  >Thẻ (tags, cách nhau bằng dấu phẩy):</label
+                >
+                <input
+                  type="text"
+                  id="manualTags"
+                  placeholder="cuoc-song, ban-be, ca-phe"
+                  class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-1">Khoảng thời gian:</label>
+                <select
+                  id="manualTimeOfDay"
+                  class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200"
+                >
+                  <option value="Sáng">Sáng</option>
+                  <option value="Trưa">Trưa</option>
+                  <option value="Chiều">Chiều</option>
+                  <option value="Tối">Tối</option>
+                  <option value="Đêm">Đêm</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="flex justify-end pt-2">
+              <button
+                type="submit"
+                class="py-2.5 px-6 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm transition"
+              >
+                <i class="fa-solid fa-floppy-disk mr-2"></i>Lưu Nhật Ký
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- SECTION 2: TIMELINE & DAILY ENTRIES -->
+      <section>
+        <!-- Date Selector & Timeline Filter Controls -->
+        <div
+          class="flex flex-col md:flex-row md:items-center justify-between pb-4 mb-6 border-b border-slate-800 gap-4"
+        >
+          <div class="flex items-center space-x-3">
+            <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Xem ngày:</div>
+            <select
+              id="dateFilterSelect"
+              class="bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-1.5 text-sm font-semibold text-purple-300 focus:outline-none focus:border-purple-500"
+            >
+              <!-- Populated by JS -->
+              <option value="">Tất cả các ngày</option>
+            </select>
+            <button
+              id="todayQuickBtn"
+              class="text-xs px-2.5 py-1 rounded-lg bg-purple-600/20 text-purple-300 hover:bg-purple-600/30 border border-purple-500/30 font-medium transition"
+            >
+              Hôm nay
             </button>
           </div>
 
-          <!-- AI Loading Status Banner -->
-          <div id="aiLoadingStatus" class="hidden p-4 rounded-2xl bg-purple-950/40 border border-purple-500/30 flex items-center space-x-3 text-purple-200 text-sm">
-            <div class="w-5 h-5 border-2 border-purple-400 border-t-transparent rounded-full animate-spin"></div>
-            <div id="aiLoadingText" class="font-medium">AI đang quan sát ảnh & lắng nghe giọng nói...</div>
+          <div class="flex items-center space-x-2">
+            <div class="relative">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-500"></i>
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Tìm kiếm nhật ký..."
+                class="bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-purple-500 w-44 sm:w-56"
+              />
+            </div>
+            <button
+              id="filterFavoritesBtn"
+              title="Chỉ hiện mục yêu thích"
+              class="p-2 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition"
+            >
+              <i class="fa-regular fa-star"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- DAILY AI SUMMARY CARD -->
+        <div
+          id="dailySummaryCard"
+          class="hidden bg-gradient-to-r from-purple-950/40 via-indigo-950/30 to-slate-900/50 border border-purple-500/30 rounded-3xl p-5 md:p-6 mb-8 backdrop-blur shadow-lg"
+        >
+          <div
+            class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-purple-500/20 gap-2"
+          >
+            <div class="flex items-center space-x-2">
+              <div class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center">
+                <i class="fa-solid fa-sparkles"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-100 text-sm md:text-base">AI Tổng Kết Ngày</h3>
+                <p id="dailySummaryMood" class="text-xs text-purple-300">Tâm trạng chủ đạo...</p>
+              </div>
+            </div>
+            <button
+              id="refreshDailySummaryBtn"
+              class="text-xs px-3 py-1.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 text-purple-200 border border-purple-500/30 flex items-center space-x-1.5 self-start sm:self-auto transition"
+            >
+              <i class="fa-solid fa-rotate-right"></i>
+              <span>Tạo lại tổng kết AI</span>
+            </button>
+          </div>
+          <p id="dailySummaryText" class="text-sm text-slate-200 leading-relaxed font-serif italic"></p>
+          <div id="dailySummaryHighlights" class="mt-3 text-xs text-slate-400 font-medium"></div>
+        </div>
+
+        <!-- TIMELINE LIST CONTAINER -->
+        <div id="timelineContainer" class="relative pl-4 sm:pl-8 border-l-2 border-slate-800 space-y-8">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+
+        <!-- Empty State -->
+        <div
+          id="emptyState"
+          class="hidden text-center py-16 px-4 bg-slate-900/30 rounded-3xl border border-slate-800/80"
+        >
+          <div
+            class="w-16 h-16 rounded-2xl bg-slate-800/60 text-slate-500 flex items-center justify-center mx-auto mb-4 text-2xl"
+          >
+            <i class="fa-solid fa-feather-pointed"></i>
+          </div>
+          <h3 class="text-base font-bold text-slate-300">Chưa có mục nhật ký nào</h3>
+          <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1">
+            Hãy chụp một bức ảnh hoặc thu âm giọng nói về sự kiện vừa diễn ra, AI sẽ giúp bạn tóm tắt thành một trang
+            nhật ký tuyệt vời!
+          </p>
+        </div>
+      </section>
+
+      <!-- FOOTER -->
+      <footer class="mt-16 pt-8 border-t border-slate-900 text-center text-xs text-slate-500">
+        <p>Nhật Ký AI Thực Thời &bull; Lưu trữ an toàn nội bộ tại máy tính</p>
+      </footer>
+    </div>
+
+    <!-- MODAL: SETTINGS (AI Provider, API Keys, Tone) -->
+    <div
+      id="settingsModal"
+      class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4"
+    >
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+        <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
+          <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-sliders text-purple-400 text-lg"></i>
+            <h3 class="font-bold text-slate-100 text-base">Cấu Hình Trí Tuệ Nhân Tạo (AI)</h3>
+          </div>
+          <button id="closeSettingsBtn" class="text-slate-400 hover:text-white p-1">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <div class="space-y-4 text-sm">
+          <!-- AI Provider selection -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Mô hình AI ưu tiên:</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                id="selectGeminiProviderBtn"
+                class="p-2.5 rounded-xl border border-purple-500 bg-purple-500/10 text-purple-300 text-xs font-bold flex items-center justify-center space-x-1.5"
+              >
+                <i class="fa-brands fa-google"></i>
+                <span>Google Gemini</span>
+              </button>
+              <button
+                type="button"
+                id="selectOpenaiProviderBtn"
+                class="p-2.5 rounded-xl border border-slate-800 bg-slate-950/60 text-slate-400 text-xs font-bold flex items-center justify-center space-x-1.5"
+              >
+                <i class="fa-solid fa-bolt"></i>
+                <span>OpenAI (GPT-4o)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Gemini Settings -->
+          <div id="geminiSettingsFields" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">
+                Gemini API Key:
+                <a
+                  href="https://aistudio.google.com/app/apikey"
+                  target="_blank"
+                  class="text-purple-400 hover:underline font-normal ml-1"
+                >
+                  (Lấy miễn phí tại Google AI Studio &rarr;)
+                </a>
+              </label>
+              <div class="relative">
+                <input
+                  type="password"
+                  id="geminiApiKeyInput"
+                  placeholder="AIzaSy..."
+                  class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none focus:border-purple-500 font-mono"
+                />
+                <button
+                  type="button"
+                  id="toggleGeminiKeyVisibility"
+                  class="absolute right-3 top-2 text-slate-500 hover:text-slate-300 text-xs"
+                >
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+              </div>
+              <div id="geminiKeyStatusText" class="text-[11px] text-slate-400 mt-1"></div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Mô hình Gemini:</label>
+              <select
+                id="geminiModelSelect"
+                class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200"
+              >
+                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Nhanh & Tối ưu đa phương thức âm thanh/ảnh)</option>
+                <option value="gemini-1.5-flash">Gemini 1.5 Flash (Ổn định cao)</option>
+                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- OpenAI Settings -->
+          <div id="openaiSettingsFields" class="hidden space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">OpenAI API Key:</label>
+              <input
+                type="password"
+                id="openaiApiKeyInput"
+                placeholder="sk-..."
+                class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none focus:border-purple-500 font-mono"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Mô hình OpenAI:</label>
+              <select
+                id="openaiModelSelect"
+                class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200"
+              >
+                <option value="gpt-4o-mini">GPT-4o Mini + Whisper</option>
+                <option value="gpt-4o">GPT-4o + Whisper</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Test Connection Button -->
+          <div class="pt-2">
+            <button
+              id="testApiKeyBtn"
+              class="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700/80 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center justify-center space-x-1.5 transition"
+            >
+              <i class="fa-solid fa-circle-check text-emerald-400"></i>
+              <span>Kiểm tra kết nối API Key</span>
+            </button>
+            <div id="testResultMsg" class="text-xs mt-2 text-center hidden"></div>
+          </div>
+
+          <div class="pt-4 flex justify-end space-x-2 border-t border-slate-800">
+            <button
+              id="saveSettingsBtn"
+              class="w-full py-2.5 px-4 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition"
+            >
+              Lưu Cài Đặt
+            </button>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- TAB 2: MANUAL ENTRY MODE -->
-      <div id="manualModeSection" class="hidden">
-        <form id="manualEntryForm" class="space-y-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Tiêu đề khoảnh khắc:</label>
-              <input type="text" id="manualTitle" placeholder="Tiêu đề nhật ký..." required class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-purple-500">
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1">Ngày:</label>
-                <input type="date" id="manualDate" required class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-purple-500">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1">Giờ:</label>
-                <input type="time" id="manualTime" required class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-purple-500">
-              </div>
-            </div>
-          </div>
+    <!-- MODAL: EDIT ENTRY -->
+    <div
+      id="editModal"
+      class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4"
+    >
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative">
+        <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
+          <h3 class="font-bold text-slate-100 text-base">Chỉnh Sửa Mục Nhật Ký</h3>
+          <button id="closeEditModalBtn" class="text-slate-400 hover:text-white p-1">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
 
+        <form id="editEntryForm" class="space-y-3">
+          <input type="hidden" id="editEntryId" />
           <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Nội dung nhật ký:</label>
-            <textarea id="manualContent" rows="4" placeholder="Viết những suy nghĩ và cảm xúc của bạn..." required class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-purple-500"></textarea>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Tiêu đề:</label>
+            <input
+              type="text"
+              id="editTitle"
+              required
+              class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-purple-500"
+            />
           </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Nội dung:</label>
+            <textarea
+              id="editContent"
+              rows="5"
+              required
+              class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-purple-500"
+            ></textarea>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-xs font-semibold text-slate-400 mb-1">Tâm trạng:</label>
-              <select id="manualMood" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200">
-                <option value="Vui vẻ|😊">😊 Vui vẻ</option>
-                <option value="Bình yên|🌿">🌿 Bình yên</option>
-                <option value="Hào hứng|✨">✨ Hào hứng</option>
-                <option value="Chiêm nghiệm|☕">☕ Chiêm nghiệm</option>
-                <option value="Biết ơn|💖">💖 Biết ơn</option>
-                <option value="Mệt mỏi|😴">😴 Cần nghỉ ngơi</option>
-              </select>
+              <input
+                type="text"
+                id="editMood"
+                class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100"
+              />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Thẻ (tags, cách nhau bằng dấu phẩy):</label>
-              <input type="text" id="manualTags" placeholder="cuoc-song, ban-be, ca-phe" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Khoảng thời gian:</label>
-              <select id="manualTimeOfDay" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200">
-                <option value="Sáng">Sáng</option>
-                <option value="Trưa">Trưa</option>
-                <option value="Chiều">Chiều</option>
-                <option value="Tối">Tối</option>
-                <option value="Đêm">Đêm</option>
-              </select>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Thẻ (tags):</label>
+              <input
+                type="text"
+                id="editTags"
+                class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100"
+              />
             </div>
           </div>
-
-          <div class="flex justify-end pt-2">
-            <button type="submit" class="py-2.5 px-6 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm transition">
-              <i class="fa-solid fa-floppy-disk mr-2"></i>Lưu Nhật Ký
+          <div class="pt-3 flex justify-end space-x-2 border-t border-slate-800">
+            <button
+              type="button"
+              id="cancelEditBtn"
+              class="py-2 px-4 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold"
+            >
+              Hủy
+            </button>
+            <button
+              type="submit"
+              class="py-2 px-5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold"
+            >
+              Cập Nhật
             </button>
           </div>
         </form>
       </div>
+    </div>
 
-    </section>
-
-    <!-- SECTION 2: TIMELINE & DAILY ENTRIES -->
-    <section>
-      
-      <!-- Date Selector & Timeline Filter Controls -->
-      <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 mb-6 border-b border-slate-800 gap-4">
-        <div class="flex items-center space-x-3">
-          <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Xem ngày:</div>
-          <select id="dateFilterSelect" class="bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-1.5 text-sm font-semibold text-purple-300 focus:outline-none focus:border-purple-500">
-            <!-- Populated by JS -->
-            <option value="">Tất cả các ngày</option>
-          </select>
-          <button id="todayQuickBtn" class="text-xs px-2.5 py-1 rounded-lg bg-purple-600/20 text-purple-300 hover:bg-purple-600/30 border border-purple-500/30 font-medium transition">
-            Hôm nay
-          </button>
-        </div>
-
-        <div class="flex items-center space-x-2">
-          <div class="relative">
-            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-500"></i>
-            <input type="text" id="searchInput" placeholder="Tìm kiếm nhật ký..." class="bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-purple-500 w-44 sm:w-56">
-          </div>
-          <button id="filterFavoritesBtn" title="Chỉ hiện mục yêu thích" class="p-2 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition">
-            <i class="fa-regular fa-star"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- DAILY AI SUMMARY CARD -->
-      <div id="dailySummaryCard" class="hidden bg-gradient-to-r from-purple-950/40 via-indigo-950/30 to-slate-900/50 border border-purple-500/30 rounded-3xl p-5 md:p-6 mb-8 backdrop-blur shadow-lg">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-purple-500/20 gap-2">
-          <div class="flex items-center space-x-2">
-            <div class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center">
-              <i class="fa-solid fa-sparkles"></i>
-            </div>
-            <div>
-              <h3 class="font-bold text-slate-100 text-sm md:text-base">AI Tổng Kết Ngày</h3>
-              <p id="dailySummaryMood" class="text-xs text-purple-300">Tâm trạng chủ đạo...</p>
-            </div>
-          </div>
-          <button id="refreshDailySummaryBtn" class="text-xs px-3 py-1.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 text-purple-200 border border-purple-500/30 flex items-center space-x-1.5 self-start sm:self-auto transition">
-            <i class="fa-solid fa-rotate-right"></i>
-            <span>Tạo lại tổng kết AI</span>
-          </button>
-        </div>
-        <p id="dailySummaryText" class="text-sm text-slate-200 leading-relaxed font-serif italic"></p>
-        <div id="dailySummaryHighlights" class="mt-3 text-xs text-slate-400 font-medium"></div>
-      </div>
-
-      <!-- TIMELINE LIST CONTAINER -->
-      <div id="timelineContainer" class="relative pl-4 sm:pl-8 border-l-2 border-slate-800 space-y-8">
-        <!-- Rendered dynamically by app.js -->
-      </div>
-
-      <!-- Empty State -->
-      <div id="emptyState" class="hidden text-center py-16 px-4 bg-slate-900/30 rounded-3xl border border-slate-800/80">
-        <div class="w-16 h-16 rounded-2xl bg-slate-800/60 text-slate-500 flex items-center justify-center mx-auto mb-4 text-2xl">
-          <i class="fa-solid fa-feather-pointed"></i>
-        </div>
-        <h3 class="text-base font-bold text-slate-300">Chưa có mục nhật ký nào</h3>
-        <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1">
-          Hãy chụp một bức ảnh hoặc thu âm giọng nói về sự kiện vừa diễn ra, AI sẽ giúp bạn tóm tắt thành một trang nhật ký tuyệt vời!
-        </p>
-      </div>
-
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="mt-16 pt-8 border-t border-slate-900 text-center text-xs text-slate-500">
-      <p>Nhật Ký AI Thực Thời &bull; Lưu trữ an toàn nội bộ tại máy tính</p>
-    </footer>
-
-  </div>
-
-  <!-- MODAL: SETTINGS (AI Provider, API Keys, Tone) -->
-  <div id="settingsModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
-      <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
-        <div class="flex items-center space-x-2">
-          <i class="fa-solid fa-sliders text-purple-400 text-lg"></i>
-          <h3 class="font-bold text-slate-100 text-base">Cấu Hình Trí Tuệ Nhân Tạo (AI)</h3>
-        </div>
-        <button id="closeSettingsBtn" class="text-slate-400 hover:text-white p-1">
-          <i class="fa-solid fa-xmark text-lg"></i>
+    <!-- MODAL: IMAGE LIGHTBOX -->
+    <div
+      id="lightboxModal"
+      class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer"
+    >
+      <div class="relative max-w-4xl max-h-[90vh]">
+        <img
+          id="lightboxImg"
+          src=""
+          alt="Full photo"
+          class="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl"
+        />
+        <button class="absolute -top-10 right-0 text-white text-2xl hover:text-purple-400">
+          <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-
-      <div class="space-y-4 text-sm">
-        <!-- AI Provider selection -->
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Mô hình AI ưu tiên:</label>
-          <div class="grid grid-cols-2 gap-2">
-            <button type="button" id="selectGeminiProviderBtn" class="p-2.5 rounded-xl border border-purple-500 bg-purple-500/10 text-purple-300 text-xs font-bold flex items-center justify-center space-x-1.5">
-              <i class="fa-brands fa-google"></i>
-              <span>Google Gemini</span>
-            </button>
-            <button type="button" id="selectOpenaiProviderBtn" class="p-2.5 rounded-xl border border-slate-800 bg-slate-950/60 text-slate-400 text-xs font-bold flex items-center justify-center space-x-1.5">
-              <i class="fa-solid fa-bolt"></i>
-              <span>OpenAI (GPT-4o)</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Gemini Settings -->
-        <div id="geminiSettingsFields" class="space-y-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">
-              Gemini API Key:
-              <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-purple-400 hover:underline font-normal ml-1">
-                (Lấy miễn phí tại Google AI Studio &rarr;)
-              </a>
-            </label>
-            <div class="relative">
-              <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none focus:border-purple-500 font-mono">
-              <button type="button" id="toggleGeminiKeyVisibility" class="absolute right-3 top-2 text-slate-500 hover:text-slate-300 text-xs">
-                <i class="fa-solid fa-eye"></i>
-              </button>
-            </div>
-            <div id="geminiKeyStatusText" class="text-[11px] text-slate-400 mt-1"></div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Mô hình Gemini:</label>
-            <select id="geminiModelSelect" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200">
-              <option value="gemini-2.5-flash">Gemini 2.5 Flash (Nhanh & Tối ưu đa phương thức âm thanh/ảnh)</option>
-              <option value="gemini-1.5-flash">Gemini 1.5 Flash (Ổn định cao)</option>
-              <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- OpenAI Settings -->
-        <div id="openaiSettingsFields" class="hidden space-y-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">OpenAI API Key:</label>
-            <input type="password" id="openaiApiKeyInput" placeholder="sk-..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none focus:border-purple-500 font-mono">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Mô hình OpenAI:</label>
-            <select id="openaiModelSelect" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200">
-              <option value="gpt-4o-mini">GPT-4o Mini + Whisper</option>
-              <option value="gpt-4o">GPT-4o + Whisper</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Test Connection Button -->
-        <div class="pt-2">
-          <button id="testApiKeyBtn" class="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700/80 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
-            <i class="fa-solid fa-circle-check text-emerald-400"></i>
-            <span>Kiểm tra kết nối API Key</span>
-          </button>
-          <div id="testResultMsg" class="text-xs mt-2 text-center hidden"></div>
-        </div>
-
-        <div class="pt-4 flex justify-end space-x-2 border-t border-slate-800">
-          <button id="saveSettingsBtn" class="w-full py-2.5 px-4 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition">
-            Lưu Cài Đặt
-          </button>
-        </div>
-      </div>
     </div>
-  </div>
 
-  <!-- MODAL: EDIT ENTRY -->
-  <div id="editModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative">
-      <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
-        <h3 class="font-bold text-slate-100 text-base">Chỉnh Sửa Mục Nhật Ký</h3>
-        <button id="closeEditModalBtn" class="text-slate-400 hover:text-white p-1">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-      </div>
-
-      <form id="editEntryForm" class="space-y-3">
-        <input type="hidden" id="editEntryId">
-        <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">Tiêu đề:</label>
-          <input type="text" id="editTitle" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-purple-500">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">Nội dung:</label>
-          <textarea id="editContent" rows="5" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-purple-500"></textarea>
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Tâm trạng:</label>
-            <input type="text" id="editMood" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Thẻ (tags):</label>
-            <input type="text" id="editTags" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100">
-          </div>
-        </div>
-        <div class="pt-3 flex justify-end space-x-2 border-t border-slate-800">
-          <button type="button" id="cancelEditBtn" class="py-2 px-4 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold">Hủy</button>
-          <button type="submit" class="py-2 px-5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold">Cập Nhật</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL: IMAGE LIGHTBOX -->
-  <div id="lightboxModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer">
-    <div class="relative max-w-4xl max-h-[90vh]">
-      <img id="lightboxImg" src="" alt="Full photo" class="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl">
-      <button class="absolute -top-10 right-0 text-white text-2xl hover:text-purple-400">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-  </div>
-
-  <!-- SCRIPTS -->
-  <script src="/static/js/camera.js"></script>
-  <script src="/static/js/audio.js"></script>
-  <script src="/static/js/ai.js"></script>
-  <script src="/static/js/app.js"></script>
-</body>
+    <!-- SCRIPTS -->
+    <script src="/static/js/camera.js"></script>
+    <script src="/static/js/audio.js"></script>
+    <script src="/static/js/ai.js"></script>
+    <script src="/static/js/app.js"></script>
+  </body>
 </html>

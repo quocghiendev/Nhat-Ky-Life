@@ -346,18 +346,74 @@
             </div>
           </div>
 
-          <!-- Middle: Optional Notes & AI Options -->
+          <!-- Middle: Date & Time, Notes & AI Options -->
           <div class="mt-6 space-y-4">
+            
+            <!-- THỜI ĐIỂM SỰ KIỆN (HỖ TRỢ CẢ THỜI GIAN THỰC & QUÁ KHỨ) -->
+            <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                <span class="text-xs font-bold text-slate-200 flex items-center space-x-2">
+                  <i class="fa-regular fa-calendar-days text-purple-400 text-sm"></i>
+                  <span>Thời điểm của sự kiện (Hôm nay hoặc Quá khứ):</span>
+                </span>
+                <div class="flex items-center space-x-1.5 text-xs">
+                  <button
+                    type="button"
+                    id="aiSetNowBtn"
+                    class="px-2.5 py-1 rounded-lg bg-purple-600/20 text-purple-300 border border-purple-500/30 hover:bg-purple-600/30 font-medium transition"
+                  >
+                    <i class="fa-solid fa-clock-rotate-left mr-1"></i>Bây giờ (Thời gian thực)
+                  </button>
+                  <button
+                    type="button"
+                    id="aiSetYesterdayBtn"
+                    class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 font-medium transition"
+                  >
+                    Hôm qua
+                  </button>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-400 mb-1">Ngày diễn ra sự kiện:</label>
+                  <input
+                    type="date"
+                    id="aiEventDate"
+                    class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-purple-500 transition"
+                  />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-400 mb-1">Giờ diễn ra sự kiện:</label>
+                  <input
+                    type="time"
+                    id="aiEventTime"
+                    class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-purple-500 transition"
+                  />
+                </div>
+              </div>
+
+              <div id="aiPastDateBanner" class="hidden mt-2.5 pt-2 border-t border-slate-800/80 text-[11px] text-amber-400 flex items-center space-x-1.5">
+                <i class="fa-solid fa-clock-rotate-left text-xs"></i>
+                <span id="aiPastDateText">Bạn đang viết nhật ký cho sự kiện trong <b>QUÁ KHỨ</b>. AI sẽ dùng văn phong hồi tưởng và hoài niệm.</span>
+              </div>
+            </div>
+
+            <!-- GHI CHÚ BỔ SUNG CHO AI -->
             <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1.5">
-                Ghi chú nhanh / Cảm xúc muốn nhấn mạnh (Tùy chọn):
-              </label>
-              <input
-                type="text"
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="block text-xs font-semibold text-slate-200">
+                  <i class="fa-solid fa-pen-nib text-purple-400 mr-1"></i>
+                  Ghi chú nhanh (Phần bổ sung để AI viết nhật ký hộ):
+                </label>
+                <span class="text-[11px] text-purple-400/90 font-medium">Bổ sung ngữ cảnh cho ảnh & voice</span>
+              </div>
+              <textarea
                 id="eventNotesInput"
-                placeholder="Ví dụ: Đang uống cà phê ngắm mưa cùng bạn cũ ở quán quen..."
+                rows="2"
+                placeholder="Nhập ghi chú thêm cho AI (ví dụ: 'Hôm đó đi dạo hồ Tây ngắm mưa cùng bạn cũ...' hoặc 'Buổi chiều uống trà đọc sách yên bình'). AI sẽ đọc ảnh và nghe voice để viết caption nhật ký hộ bạn; nếu ảnh/voice chưa rõ, AI sẽ dựa vào ghi chú này!"
                 class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-purple-500 transition"
-              />
+              ></textarea>
             </div>
 
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
@@ -386,7 +442,7 @@
                   checked
                   class="w-4 h-4 rounded text-purple-600 bg-slate-900 border-slate-700 focus:ring-0 focus:ring-offset-0"
                 />
-                <span class="font-medium">Tự động điền & lưu vào nhật ký ngày hôm nay</span>
+                <span class="font-medium">Tự động điền & lưu vào nhật ký ngày được chọn</span>
               </label>
             </div>
 

@@ -58,6 +58,15 @@ async def process_event(
             detail="Vui lòng cung cấp ít nhất một nội dung: hình ảnh, đoạn ghi âm, hoặc ghi chú chữ."
         )
 
+    # Determine target event datetime (supporting past and real-time dates)
+    try:
+        clean_time = cur_time
+        if len(clean_time) == 5:
+            clean_time += ":00"
+        event_dt = datetime.strptime(f"{cur_date} {clean_time}", "%Y-%m-%d %H:%M:%S")
+    except Exception:
+        event_dt = now
+
     # Process with Multimodal AI
     ai_result = await process_multimodal_event(
         image_bytes=image_bytes,
@@ -66,7 +75,7 @@ async def process_event(
         audio_mime=audio_mime,
         user_notes=notes,
         custom_tone=tone,
-        current_time=now
+        current_time=event_dt
     )
 
     tags = ai_result.get("tags", [])
@@ -80,7 +89,8 @@ async def process_event(
         entry_payload = {
             "entry_date": cur_date,
             "entry_time": cur_time,
-            "title": ai_result.get("title", "Khoảnh khắc trong ngày"),
+            "created_at": event_dt.isoformat(),
+            "title": ai_result.get("title", "Khoảnh khắc nhật ký"),
             "content": ai_result.get("content", ""),
             "raw_transcript": ai_result.get("transcription", ""),
             "image_description": ai_result.get("image_description", ""),

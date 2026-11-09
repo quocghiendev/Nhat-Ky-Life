@@ -7,6 +7,8 @@
   const eventNotesInput = document.getElementById('eventNotesInput');
   const eventToneSelect = document.getElementById('eventToneSelect');
   const autoSaveToggle = document.getElementById('autoSaveToggle');
+  const aiEventDate = document.getElementById('aiEventDate');
+  const aiEventTime = document.getElementById('aiEventTime');
 
   async function handleAIProcess() {
     const imageFile = window.cameraManager ? window.cameraManager.getImageFile() : null;
@@ -14,6 +16,8 @@
     const notes = eventNotesInput.value.trim();
     const tone = eventToneSelect.value;
     const autoSave = autoSaveToggle.checked;
+    const targetDate = aiEventDate ? aiEventDate.value : '';
+    const targetTime = aiEventTime ? aiEventTime.value : '';
 
     if (!imageFile && !audioFile && !notes) {
       alert('Vui lòng cung cấp ít nhất 1 dữ liệu: Chụp/Tải ảnh, Ghi âm giọng nói, hoặc Ghi chú nhanh.');
@@ -29,7 +33,7 @@
     const stages = [
       'AI đang quan sát ảnh & lắng nghe từng câu chữ trong giọng nói...',
       'Đang đúc kết cảm xúc & xây dựng mạch truyện nhật ký...',
-      'Đang hoàn tất bài viết cho ngày hôm nay...'
+      'Đang hoàn tất bài viết nhật ký...'
     ];
     let stageIdx = 0;
     const stageTimer = setInterval(() => {
@@ -48,6 +52,12 @@
       }
       if (notes) {
         formData.append('notes', notes);
+      }
+      if (targetDate) {
+        formData.append('entry_date', targetDate);
+      }
+      if (targetTime) {
+        formData.append('entry_time', targetTime);
       }
       formData.append('tone', tone);
       formData.append('auto_save', autoSave ? 'true' : 'false');
@@ -78,10 +88,15 @@
         eventNotesInput.value = '';
 
         // Notify user
-        showToast('✨ Đã tạo và lưu nhật ký thành công!', 'success');
+        const isPast = targetDate && targetDate < new Date().toISOString().split('T')[0];
+        const msg = isPast ? `✨ Đã lưu nhật ký cho ngày quá khứ (${targetDate})!` : '✨ Đã tạo và lưu nhật ký thành công!';
+        showToast(msg, 'success');
 
-        // Refresh timeline
+        // Refresh timeline and switch date filter if writing for past date
         if (window.appController) {
+          if (targetDate) {
+            window.appController.setSelectedDate(targetDate);
+          }
           await window.appController.loadStats();
           await window.appController.loadDates();
           await window.appController.loadEntries();

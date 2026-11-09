@@ -130,31 +130,51 @@ async def _call_gemini_multimodal(
     
     parts: List[Dict[str, Any]] = []
     
+    is_past = current_time.date() < datetime.now().date()
+    event_date_str = current_time.strftime("%d/%m/%Y")
+    event_time_str = current_time.strftime("%H:%M")
+    
+    if is_past:
+        time_context = f"Sự kiện này đã diễn ra trong QUÁ KHỨ (vào ngày {event_date_str} lúc {event_time_str}, buổi {time_of_day}). Hãy viết nhật ký với tâm thế hồi tưởng, hoài niệm, trân trọng một kỷ niệm hoặc khoảnh khắc đã trải qua."
+    else:
+        time_context = f"Sự kiện này diễn ra vào HÔM NAY (lúc {event_time_str}, buổi {time_of_day}). Hãy viết nhật ký với cảm xúc thời gian thực tươi mới của ngày hôm nay."
+
     prompt_text = f"""
 Bạn là một trợ lý viết nhật ký cá nhân bằng tiếng Việt tinh tế và thấu hiểu.
-Thời gian ghi nhận: {current_time.strftime('%H:%M, ngày %d/%m/%Y')} (Khoảng thời gian: Buổi {time_of_day}).
-Yêu cầu văn phong: {tone_instruction}
+Nhiệm vụ của bạn: VIẾT NHẬT KÝ HỘ người dùng dựa trên các tệp hình ảnh, âm thanh và ghi chú bổ sung.
 
-Nhiệm vụ của bạn:
-1. Nếu có tệp âm thanh đính kèm (giọng nói người dùng): Hãy nghe kỹ giọng nói, ghi lại nội dung lời nói (transcription) và cảm nhận cảm xúc trong giọng kể.
-2. Nếu có tệp hình ảnh đính kèm (ảnh chụp camera/ảnh tải lên): Hãy quan sát khung cảnh, đối tượng, màu sắc, chi tiết nổi bật trong ảnh.
-3. Nếu có ghi chú bằng chữ của người dùng: Hãy kết hợp thông điệp đó.
-4. Tổng hợp tất cả các chi tiết từ âm thanh, hình ảnh và ghi chú thành 1 bài viết nhật ký hoàn chỉnh, chân thực, hấp dẫn theo dòng thời gian của ngày hôm nay.
+THÔNG TIN THỜI ĐIỂM:
+- Thời gian sự kiện: Buổi {time_of_day}, lúc {event_time_str} ngày {event_date_str}.
+- Ngữ cảnh: {time_context}
+- Yêu cầu văn phong: {tone_instruction}
+
+CÁC QUY TẮC PHÂN TÍCH VÀ BIÊN SOẠN BẮT BUỘC TUÂN THỦ:
+1. PHÂN TÍCH GIỌNG NÓI & HÌNH ẢNH:
+   - Nếu có tệp âm thanh (giọng nói): Lắng nghe kỹ lời kể, sắc thái cảm xúc để hiểu trọn vẹn điều người dùng muốn bày tỏ.
+   - Nếu có tệp hình ảnh: Quan sát chi tiết khung cảnh, ánh sáng, con người, sự vật để cảm nhận không gian của sự kiện.
+   - Viết caption / nội dung nhật ký tương thích và phản ánh chính xác những gì nhìn thấy trong ảnh hoặc nghe thấy trong âm thanh.
+
+2. VAI TRÒ CỦA GHI CHÚ NHANH (USER NOTES):
+   - "Ghi chú nhanh" là phần BỔ SUNG CỰC KỲ QUAN TRỌNG từ người dùng để bạn hiểu rõ hơn bối cảnh và tâm tư đằng sau ảnh/voice. Hãy lồng ghép thông điệp ghi chú này để viết nhật ký hộ một cách tự nhiên và chân thật nhất.
+
+3. QUY TẮC XỬ LÝ KHI THIẾU DỮ LIỆU:
+   - NẾU tệp âm thanh hoặc hình ảnh không có gì, bị mờ/nhiễu hoặc AI không hiểu được: HÃY DỰA HOÀN TOÀN VÀO GHI CHÚ NHANH CỦA NGƯỜI DÙNG để viết một bài nhật ký ý nghĩa và đầy đủ.
+   - NẾU cả âm thanh, hình ảnh đều không rõ VÀ người dùng CŨNG KHÔNG ĐỂ LẠI GHI CHÚ (hoặc chỉ có ảnh/voice tĩnh mà không có lời): HÃY VIẾT MỘT CAPTION/NHẬT KÝ "VU VƠ" NHƯNG TINH TẾ, nhấn mạnh vào khoảng không gian, âm thanh và hình ảnh để người đọc hiểu được rằng người dùng ĐÃ CÓ MỘT SỰ KIỆN / KHOẢNH KHẮC ĐỜI THỰC ĐÁNG NHỚ diễn ra vào khoảng thời gian đó.
 
 BẮT BUỘC trả về đúng định dạng JSON chuẩn (không bọc trong markdown hoặc text thừa) với các trường sau:
 {{
   "title": "Tiêu đề nhật ký ngắn gọn, ý nghĩa, gợi cảm xúc (khoảng 5-10 từ)",
-  "transcription": "Gỡ băng nội dung giọng nói trong âm thanh (nếu không có âm thanh thì để chuỗi rỗng)",
+  "transcription": "Gỡ băng nội dung giọng nói trong âm thanh (nếu không có âm thanh hoặc không rõ thì để chuỗi rỗng)",
   "image_description": "Mô tả ngắn gọn khung cảnh trong ảnh (nếu không có ảnh thì để chuỗi rỗng)",
-  "content": "Nội dung nhật ký hoàn chỉnh bằng tiếng Việt (1 đến 3 đoạn văn tự nhiên, sâu sắc, kết hợp chi tiết từ ảnh và lời kể)",
-  "mood": "Tâm trạng nổi bật nhất (ví dụ: Vui vẻ, Hạnh phúc, Bình yên, Chiêm nghiệm, Náo nhiệt, Bồi hồi...)",
-  "mood_emoji": "1 emoji phù hợp nhất với tâm trạng (ví dụ: 😊, ☕, 🌿, 🌅, ✨, 🎉...)",
+  "content": "Nội dung nhật ký hoàn chỉnh bằng tiếng Việt (1 đến 3 đoạn văn sâu sắc, tự nhiên, viết hộ người dùng theo đúng các quy tắc trên)",
+  "mood": "Tâm trạng nổi bật nhất (ví dụ: Vui vẻ, Hạnh phúc, Bình yên, Chiêm nghiệm, Náo nhiệt, Hoài niệm...)",
+  "mood_emoji": "1 emoji phù hợp nhất với tâm trạng (ví dụ: 😊, ☕, 🌿, 🌅, ✨, 🎉, 🍃...)",
   "time_of_day": "{time_of_day}",
   "tags": ["tag1", "tag2", "tag3"]
 }}
 """
     if user_notes:
-        prompt_text += f"\nGhi chú bổ sung từ người dùng: {user_notes}\n"
+        prompt_text += f"\nGhi chú bổ sung từ người dùng (rất quan trọng): {user_notes}\n"
 
     parts.append({"text": prompt_text})
     
@@ -232,24 +252,38 @@ async def _call_openai_multimodal(
     # Now call GPT-4o for multimodal synthesis
     messages_content: List[Dict[str, Any]] = []
     
+    is_past = current_time.date() < datetime.now().date()
+    event_date_str = current_time.strftime("%d/%m/%Y")
+    event_time_str = current_time.strftime("%H:%M")
+    
+    if is_past:
+        time_context = f"Sự kiện này đã diễn ra trong QUÁ KHỨ (ngày {event_date_str} lúc {event_time_str}, buổi {time_of_day}). Hãy viết nhật ký theo góc nhìn hồi tưởng, hoài niệm, trân trọng một kỷ niệm đã qua."
+    else:
+        time_context = f"Sự kiện này diễn ra vào HÔM NAY (lúc {event_time_str}, buổi {time_of_day}). Hãy viết nhật ký với cảm xúc tươi mới của ngày hôm nay."
+
     prompt_text = f"""
-Bạn là một trợ lý viết nhật ký cá nhân bằng tiếng Việt tinh tế.
-Thời gian: {current_time.strftime('%H:%M, %d/%m/%Y')} (Buổi {time_of_day}).
-Yêu cầu văn phong: {tone_instruction}
+Bạn là một trợ lý viết nhật ký cá nhân bằng tiếng Việt tinh tế và thấu hiểu.
+Nhiệm vụ: VIẾT NHẬT KÝ HỘ người dùng dựa trên hình ảnh, âm thanh và ghi chú bổ sung.
 
-Dữ liệu đầu vào:
-- Lời nói người dùng ghi âm lại: {transcript if transcript else "(Không có âm thanh)"}
-- Ghi chú người dùng: {user_notes if user_notes else "(Không có)"}
+THÔNG TIN THỜI ĐIỂM:
+- Thời gian: Buổi {time_of_day}, lúc {event_time_str} ngày {event_date_str}.
+- Ngữ cảnh: {time_context}
+- Yêu cầu văn phong: {tone_instruction}
 
-Hãy phân tích hình ảnh đính kèm (nếu có) và kết hợp với lời nói + ghi chú để tạo 1 bài viết nhật ký hoàn chỉnh.
-Trả về JSON chuẩn với các trường:
+QUY TẮC BẮT BUỘC:
+1. Đọc và phân tích kỹ hình ảnh và lời nói ({transcript if transcript else 'không có âm thanh'}). Viết caption/comment nhật ký tương thích và phản ánh đúng những gì nhìn thấy trong ảnh hoặc nghe thấy trong âm thanh.
+2. GHI CHÚ NHANH TỪ NGƯỜI DÙNG: {user_notes if user_notes else '(Không có)'}. Đây là phần BỔ SUNG QUAN TRỌNG để AI hiểu trọn vẹn ngữ cảnh và viết nhật ký hộ.
+3. NẾU tệp âm thanh hoặc hình ảnh không có gì hoặc không hiểu được: Hãy dựa hoàn toàn vào ghi chú nhanh của người dùng để viết nhật ký.
+4. NẾU cả âm thanh, hình ảnh đều không rõ VÀ không có ghi chú: Hãy viết một CAPTION/NHẬT KÝ "VU VƠ" NHƯNG TINH TẾ, nhấn mạnh vào khung cảnh âm thanh và hình ảnh để người đọc hiểu được rằng người dùng ĐÃ CÓ MỘT SỰ KIỆN / KHOẢNH KHẮC ĐỜI THỰC ĐÁNG NHỚ diễn ra vào khoảng thời gian đó.
+
+Trả về JSON chuẩn:
 {{
-  "title": "Tiêu đề nhật ký (5-10 từ)",
+  "title": "Tiêu đề nhật ký (5-10 từ gợi cảm xúc)",
   "transcription": "{transcript}",
   "image_description": "Mô tả bức ảnh (nếu có)",
-  "content": "Nội dung bài viết nhật ký giàu cảm xúc, kết hợp ảnh và lời kể",
+  "content": "Nội dung bài viết nhật ký hoàn chỉnh (1 đến 3 đoạn văn sâu sắc, tự nhiên, viết hộ người dùng theo đúng các quy tắc trên)",
   "mood": "Tâm trạng",
-  "mood_emoji": "emoji",
+  "mood_emoji": "emoji phù hợp",
   "time_of_day": "{time_of_day}",
   "tags": ["tag1", "tag2"]
 }}
@@ -299,59 +333,106 @@ def _generate_smart_fallback(
     warning: str = ""
 ) -> Dict[str, Any]:
     """
-    Intelligent simulated diary generator when API key is not yet set or network fails.
+    Intelligent simulated diary generator following exact user instructions:
+    - Base on notes if audio/image is missing or unclear.
+    - If no notes, write whimsical evocative caption emphasizing moment occurred at that time.
+    - Adapt tone for past or present events.
     """
     has_image = bool(image_bytes)
     has_audio = bool(audio_bytes)
     notes = (user_notes or "").strip()
     
+    is_past = current_time.date() < datetime.now().date()
+    date_str = current_time.strftime("%d/%m/%Y")
     time_str = current_time.strftime("%H:%M")
     
-    if has_image and has_audio:
-        title = f"Khoảnh khắc ảnh & giọng nói lúc {time_str}"
-        content = (
-            f"Một khoảnh khắc được lưu lại vào buổi {time_of_day.lower()} lúc {time_str}. "
-            f"Bức ảnh ghi lại không gian thực tế, cùng đoạn âm thanh lưu giữ trọn vẹn những suy nghĩ và cảm xúc ngay lúc đó. "
-            + (f"Ghi chú: \"{notes}\". " if notes else "")
-            + "Những mảnh ghép ký ức này giúp một ngày trôi qua thêm phần ý nghĩa và đáng nhớ."
-        )
-        mood = "Hứng khởi"
-        mood_emoji = "✨"
-        tags = ["khoanh-khac", "hinh-anh", "giong-noi", f"buoi-{time_of_day.lower()}"]
-        img_desc = "Ảnh chụp sự kiện đời thực được ghi lại từ camera."
-        transcript = notes or "Đoạn ghi âm giọng nói chân thực từ thiết bị."
-    elif has_image:
-        title = f"Khung cảnh buổi {time_of_day.lower()} lúc {time_str}"
-        content = (
-            f"Bức ảnh chụp lại khoảnh khắc đáng nhớ vào buổi {time_of_day.lower()}. "
-            + (f"Đi kèm lời nhắn: \"{notes}\". " if notes else "")
-            + "Có những khoảnh khắc chỉ cần một góc nhìn qua ống kính camera cũng đủ để lưu giữ tâm trạng của cả một ngày."
-        )
-        mood = "Bình yên"
-        mood_emoji = "📸"
-        tags = ["anh-chup", "ky-niem", f"buoi-{time_of_day.lower()}"]
-        img_desc = "Bức ảnh được chụp trực tiếp từ camera hoặc tải lên."
-        transcript = ""
-    elif has_audio:
-        title = f"Tâm sự bằng giọng nói buổi {time_of_day.lower()}"
-        content = (
-            f"Một đoạn voice ghi lại những dòng suy nghĩ lúc {time_str}. "
-            + (f"Nội dung vắn tắt: \"{notes}\". " if notes else "")
-            + "Ghi âm nhật ký bằng giọng nói giúp cảm xúc được giữ nguyên vẹn một cách chân thực nhất."
-        )
-        mood = "Chiêm nghiệm"
-        mood_emoji = "🎙️"
-        tags = ["ghi-am", "tam-su", f"buoi-{time_of_day.lower()}"]
-        img_desc = ""
-        transcript = notes or "Bản ghi âm giọng nói thời gian thực."
+    past_prefix = f"Nhìn lại ngày {date_str}, " if is_past else ""
+    
+    # CASE 1: User provided notes (Ghi chú nhanh là phần bổ sung quan trọng để AI viết hộ)
+    if notes:
+        title = notes[:35] if len(notes) <= 35 else (notes[:32] + "...")
+        if has_image and has_audio:
+            content = (
+                f"{past_prefix}một khoảnh khắc đáng nhớ vào buổi {time_of_day.lower()} lúc {time_str}. "
+                f"Hình ảnh và giọng nói đã ghi lại trọn vẹn không gian thực tế, hòa cùng những dòng tâm sự: \"{notes}\". "
+                "Từng chi tiết nhỏ nhặt nhất trong ngày bỗng trở nên thật sống động và ý nghĩa khi được lưu giữ lại như thế này."
+            )
+            mood = "Hứng khởi"
+            mood_emoji = "✨"
+        elif has_image:
+            content = (
+                f"{past_prefix}bức ảnh chụp lại khoảnh khắc đáng nhớ vào buổi {time_of_day.lower()} lúc {time_str}. "
+                f"Đi cùng lời nhắn gửi: \"{notes}\". "
+                "Khung cảnh qua ống kính kết hợp với dòng cảm nghĩ đã tạo nên một trang nhật ký chân thật, vẹn nguyên cảm xúc."
+            )
+            mood = "Bình yên"
+            mood_emoji = "📸"
+        elif has_audio:
+            content = (
+                f"{past_prefix}một đoạn voice chia sẻ lúc {time_str}. "
+                f"Những điều được gửi gắm: \"{notes}\". "
+                "Thanh âm chân thực kết hợp cùng dòng suy nghĩ này đã giúp lưu lại trọn vẹn tâm trạng của thời điểm ấy."
+            )
+            mood = "Chiêm nghiệm"
+            mood_emoji = "🎙️"
+        else:
+            content = (
+                f"{past_prefix}ghi chép nhanh vào buổi {time_of_day.lower()} lúc {time_str}: \"{notes}\". "
+                "Dù chỉ là đôi dòng ngắn ngủi, đây vẫn là một mảnh ghép quý giá đánh dấu một sự kiện trong hành trình của mình."
+            )
+            mood = "Bình yên"
+            mood_emoji = "🌿"
+            
+        tags = ["nhat-ky", f"buoi-{time_of_day.lower()}", "ky-niem"]
+        img_desc = "Ảnh sự kiện thực tế được ghi lại." if has_image else ""
+        transcript = notes if has_audio else ""
+
+    # CASE 2: No notes provided -> Write a whimsical, evocative caption emphasizing sound & image
     else:
-        title = notes[:30] if notes else f"Nhật ký buổi {time_of_day.lower()} lúc {time_str}"
-        content = notes or f"Ghi chép nhanh khoảnh khắc trong ngày vào lúc {time_str}."
-        mood = "Thư thái"
-        mood_emoji = "🌿"
-        tags = ["nhat-ky", f"buoi-{time_of_day.lower()}"]
-        img_desc = ""
-        transcript = ""
+        title = f"Một thoáng {time_of_day.lower()} vu vơ lúc {time_str}"
+        if has_image and has_audio:
+            content = (
+                f"{past_prefix}một khoảng lặng đọng lại lúc {time_str} buổi {time_of_day.lower()}. "
+                "Khung hình và thanh âm đã thay lời muốn nói, đánh dấu một sự kiện tĩnh lặng nhưng đáng nhớ trong đời sống thường nhật. "
+                "Có những khoảnh khắc trôi qua không cần quá nhiều lời lẽ, chỉ cần một góc nhìn và một nhịp thở của thời gian cũng đủ để biết mình đã hiện diện trọn vẹn ở nơi đó."
+            )
+            mood = "Lắng đọng"
+            mood_emoji = "🍃"
+            tags = ["khoanh-khac", "hinh-anh", "giong-noi", f"buoi-{time_of_day.lower()}"]
+            img_desc = "Ảnh chụp sự kiện đời thực được ghi lại từ camera."
+            transcript = "Âm thanh nền và thanh âm tự nhiên của khoảnh khắc."
+        elif has_image:
+            content = (
+                f"{past_prefix}một góc nhìn bình yên được ghi lại qua ống kính vào buổi {time_of_day.lower()} lúc {time_str}. "
+                "Bức ảnh thay cho mọi lời kể vu vơ, nhấn mạnh rằng đã có một sự kiện thực tế diễn ra vào đúng khoảnh khắc này, "
+                "lặng lẽ ghi dấu một nét vẽ đẹp vào cuốn nhật ký thời gian."
+            )
+            mood = "Chiêm nghiệm"
+            mood_emoji = "📸"
+            tags = ["anh-chup", "khoanh-khac", f"buoi-{time_of_day.lower()}"]
+            img_desc = "Bức ảnh chụp lại không gian thực tế."
+            transcript = ""
+        elif has_audio:
+            content = (
+                f"{past_prefix}một đoạn âm thanh lưu giữ thanh âm xung quanh vào buổi {time_of_day.lower()} lúc {time_str}. "
+                "Tiếng vọng của khoảnh khắc ấy như một lời nhắc nhở vu vơ nhưng đầy chất thơ rằng mình đã trải qua một sự kiện có thật, "
+                "mộc mạc và chân thành."
+            )
+            mood = "Lắng đọng"
+            mood_emoji = "🎙️"
+            tags = ["ghi-am", "thanh-am", f"buoi-{time_of_day.lower()}"]
+            img_desc = ""
+            transcript = "Thanh âm mộc mạc của sự kiện đời thực."
+        else:
+            content = (
+                f"{past_prefix}khoảnh khắc đánh dấu một sự kiện diễn ra vào buổi {time_of_day.lower()} lúc {time_str}. "
+                "Những dấu mốc thời gian giản dị nhưng luôn nhắc nhở về từng bước đi qua mỗi ngày."
+            )
+            mood = "Thư thái"
+            mood_emoji = "🌿"
+            tags = ["nhat-ky", f"buoi-{time_of_day.lower()}"]
+            img_desc = ""
+            transcript = ""
 
     return {
         "title": title,

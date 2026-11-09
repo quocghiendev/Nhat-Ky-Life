@@ -14,6 +14,14 @@
   const tabManualModeBtn = document.getElementById('tabManualModeBtn');
   const aiModeSection = document.getElementById('aiModeSection');
   const manualModeSection = document.getElementById('manualModeSection');
+
+  // AI Event Time Elements (Supporting Past & Real-time entries)
+  const aiEventDate = document.getElementById('aiEventDate');
+  const aiEventTime = document.getElementById('aiEventTime');
+  const aiSetNowBtn = document.getElementById('aiSetNowBtn');
+  const aiSetYesterdayBtn = document.getElementById('aiSetYesterdayBtn');
+  const aiPastDateBanner = document.getElementById('aiPastDateBanner');
+  const aiPastDateText = document.getElementById('aiPastDateText');
   
   const manualEntryForm = document.getElementById('manualEntryForm');
   const manualTitle = document.getElementById('manualTitle');
@@ -126,6 +134,58 @@
     manualDate.value = now.toISOString().split('T')[0];
     manualTime.value = now.toTimeString().slice(0, 5);
   });
+
+  // AI Event Time management (Real-time & Past dates)
+  function initAiDateTime() {
+    const now = new Date();
+    if (aiEventDate && !aiEventDate.value) {
+      aiEventDate.value = now.toISOString().split('T')[0];
+    }
+    if (aiEventTime && !aiEventTime.value) {
+      aiEventTime.value = now.toTimeString().slice(0, 5);
+    }
+    checkPastDateStatus();
+  }
+
+  function checkPastDateStatus() {
+    if (!aiEventDate || !aiPastDateBanner) return;
+    const todayStr = new Date().toISOString().split('T')[0];
+    const chosen = aiEventDate.value;
+    if (chosen && chosen < todayStr) {
+      aiPastDateBanner.classList.remove('hidden');
+      if (aiPastDateText) {
+        aiPastDateText.innerHTML = `Bạn đang viết nhật ký cho ngày <b>${chosen} (QUÁ KHỨ)</b>. AI sẽ tự động điều chỉnh văn phong hoài niệm và hồi tưởng.`;
+      }
+    } else {
+      aiPastDateBanner.classList.add('hidden');
+    }
+  }
+
+  if (aiSetNowBtn) {
+    aiSetNowBtn.addEventListener('click', () => {
+      const now = new Date();
+      if (aiEventDate) aiEventDate.value = now.toISOString().split('T')[0];
+      if (aiEventTime) aiEventTime.value = now.toTimeString().slice(0, 5);
+      checkPastDateStatus();
+      if (window.aiCoordinator) window.aiCoordinator.showToast('Đã đặt thời điểm: Bây giờ (Thời gian thực)', 'info');
+    });
+  }
+
+  if (aiSetYesterdayBtn) {
+    aiSetYesterdayBtn.addEventListener('click', () => {
+      const y = new Date();
+      y.setDate(y.getDate() - 1);
+      if (aiEventDate) aiEventDate.value = y.toISOString().split('T')[0];
+      checkPastDateStatus();
+      if (window.aiCoordinator) window.aiCoordinator.showToast('Đã chọn thời điểm: Hôm qua', 'info');
+    });
+  }
+
+  if (aiEventDate) {
+    aiEventDate.addEventListener('change', checkPastDateStatus);
+  }
+
+  initAiDateTime();
 
   // 4. Load Stats
   async function loadStats() {
@@ -690,6 +750,10 @@
     deleteEntry,
     toggleFav,
     openLightbox,
+    setSelectedDate: (date) => {
+      selectedDate = date;
+      if (dateFilterSelect) dateFilterSelect.value = date;
+    },
     switchToManualTab: (aiResult, imgPath, audioPath) => {
       tabManualModeBtn.click();
       if (aiResult) {

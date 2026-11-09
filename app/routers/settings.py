@@ -77,20 +77,42 @@ async def test_key(req: TestKeyRequest):
         raise HTTPException(status_code=400, detail="API Key không được để trống.")
         
     if req.provider.lower() == "gemini":
-        model = req.model or "gemini-3.8-flash"
+        model = req.model or "gemini-flash-lite-latest"
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}"
         payload = {
             "contents": [{"role": "user", "parts": [{"text": "Xin chào! Trả lời đúng 1 từ: OK"}]}]
         }
         try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
+            async with httpx.AsyncClient(timeout=15.0) as client:
                 resp = await client.post(url, json=payload)
                 if resp.status_code == 200:
-                    return {"valid": True, "message": "Kết nối Gemini API thành công!"}
+                    return {"valid": True, "message": f"Kết nối Gemini API ({model}) thành công!"}
+                elif resp.status_code == 503:
+                    # Try fallback to gemini-flash-lite-latest
+                    try:
+                        fb_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key={key}"
+                        fb_resp = await client.post(fb_url, json=payload)
+                        if fb_resp.status_code == 200:
+                            return {"valid": True, "message": "Key hợp lệ! (Mô hình 3.8 đang bận, khuyên dùng 'Gemini Flash Lite' để phản hồi tức thì)"}
+                    except Exception:
+                        pass
+                    return {"valid": False, "message": f"Mô hình {model} đang bị quá tải tạm thời từ Google. Hãy đổi sang 'Gemini Flash Lite'!"}
                 else:
                     return {"valid": False, "message": f"Lỗi Gemini: HTTP {resp.status_code} - {resp.text[:200]}"}
+        except httpx.TimeoutException:
+            # Check if key works with the faster lite model
+            try:
+                async with httpx.AsyncClient(timeout=10.0) as client:
+                    fb_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key={key}"
+                    fb_resp = await client.post(fb_url, json=payload)
+                    if fb_resp.status_code == 200:
+                        return {"valid": True, "message": "Key hợp lệ! (Gợi ý: Hãy chọn 'Gemini Flash Lite' để kết nối siêu nhanh)"}
+            except Exception:
+                pass
+            return {"valid": False, "message": "Quá thời gian chờ phản hồi (Timeout). Hãy chọn mô hình 'Gemini Flash Lite' và thử lại!"}
         except Exception as e:
-            return {"valid": False, "message": f"Không thể kết nối: {str(e)}"}
+            err_msg = str(e) or type(e).__name__
+            return {"valid": False, "message": f"Không thể kết nối: {err_msg}"}
             
     elif req.provider.lower() == "openai":
         url = "https://api.openai.com/v1/models"
